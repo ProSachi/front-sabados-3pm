@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PokéSearch - Encuentra tu Compañero</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#36e27b",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112117",
+                        "card-dark": "#1b3224",
+                        "card-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for better aesthetic */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #112117; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #254632; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #36e27b; 
+        }
+        
+        /* Adding fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary selection:text-black">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-gray-200 dark:border-[#254632] bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-4 lg:px-12">
+<div class="flex items-center gap-3">
+<div class="flex size-10 items-center justify-center rounded-full bg-primary/20 text-primary">
+<span class="material-symbols-outlined filled" style="font-size: 24px;">capture</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">PokéSearch</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex h-10 items-center justify-center rounded-full px-6 text-sm font-bold text-slate-600 dark:text-[#95c6a9] hover:text-primary transition-colors">
+                    Iniciar Sesión
+                </button>
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-primary/50 bg-gray-200 dark:bg-gray-800">
+<img alt="Avatar de Usuario" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5W-BlZGQLf65lIr6YjR7Lten1mfbhSIs7y5EWPjN7ElHgoDofinXK1Id_bej_f1DNEegHQcTuIzjw1W0C0BSTskEgWssXS8d9FO4wabkX8C508wGLI1Zw4XWY-FQHUknbAd33NvG3JVaWqUW9rPxSrB6j-T1LFEvn0AZrbHACLRIOBOgsfDdSXmJ8f5nkTwW5PdI_YmR1mQONwzNEqtZx57dUDTixtVJMAecTkYDPInW1Ss_tWzfPmGB0fj-vxE4_FiHSeybmhSI"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex flex-1 flex-col items-center px-4 py-8 md:px-8 lg:px-0">
+<div class="w-full max-w-5xl space-y-8">
+<!-- Hero / Search Section -->
+<div class="flex flex-col items-center justify-center space-y-8 py-12 text-center md:py-20">
+<div class="space-y-4 max-w-2xl">
+<h1 class="text-4xl font-black leading-tight tracking-tight text-slate-900 dark:text-white md:text-6xl">
+                            Encuentra tu <span class="text-primary">Compañero</span>
+</h1>
+<p class="text-lg text-slate-600 dark:text-[#95c6a9]">
+                            Explora la Pokédex. Busca por nombre o ID para descubrir estadísticas, habilidades y tipos.
+                        </p>
+</div>
+<!-- Search Input with functionality -->
+<div class="w-full max-w-xl relative group z-10">
+<div class="absolute -inset-1 rounded-full bg-primary/30 opacity-20 blur transition duration-200 group-hover:opacity-40"></div>
+<label class="relative flex h-14 w-full items-center overflow-hidden rounded-full bg-white dark:bg-[#1b3224] shadow-lg ring-1 ring-black/5 dark:ring-[#366348]">
+<div class="flex h-full w-14 items-center justify-center text-slate-400 dark:text-[#95c6a9]">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input id="searchInput" class="h-full flex-1 bg-transparent px-2 text-base font-medium placeholder:text-slate-400 dark:placeholder:text-[#6a8f7b] text-slate-900 dark:text-white focus:outline-none" placeholder="Ingresa nombre o ID (ej. Pikachu, 25)"/>
+<button id="searchBtn" class="mr-2 flex h-10 items-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-[#122118] transition hover:bg-primary/90">
+<span>Buscar</span>
+</button>
+</label>
+</div>
+</div>
+
+<!-- Loading State -->
+<div id="loading" class="hidden w-full text-center py-12">
+<div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
+<p class="text-slate-600 dark:text-[#95c6a9] mt-4 font-medium">Cargando Pokémon...</p>
+</div>
+
+<!-- Error State -->
+<div id="error" class="hidden w-full animate-[fadeIn_0.5s_ease-out]">
+<div class="relative overflow-hidden rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-8 text-center">
+<div class="flex flex-col items-center gap-3">
+<span class="material-symbols-outlined text-red-500 text-5xl">error</span>
+<h3 class="text-xl font-bold text-red-800 dark:text-red-400">Pokémon no encontrado</h3>
+<p id="errorMessage" class="text-red-600 dark:text-red-300"></p>
+</div>
+</div>
+</div>
+
+<!-- Result Display Area with dynamic content -->
+<div id="pokemonCard" class="hidden w-full animate-[fadeIn_0.5s_ease-out]">
+<div class="relative overflow-hidden rounded-2xl bg-card-light dark:bg-card-dark border border-gray-200 dark:border-[#2f4b3a] shadow-xl">
+<!-- Decorative background glow for card -->
+<div class="absolute -right-20 -top-20 size-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+<div class="grid grid-cols-1 gap-0 lg:grid-cols-12">
+<!-- Left Column: Image & Basic Info -->
+<div class="relative flex flex-col items-center justify-center p-8 lg:col-span-5 lg:border-r lg:border-gray-200 dark:lg:border-[#2f4b3a] bg-gray-50/50 dark:bg-[#16291e]/50">
+<div class="relative mb-6 group cursor-pointer">
+<div class="absolute inset-0 rounded-full bg-primary/20 blur-xl transition-all duration-500 group-hover:bg-primary/40 group-hover:blur-2xl"></div>
+<div class="relative flex aspect-square size-64 items-center justify-center overflow-hidden rounded-full border-4 border-white dark:border-[#2f4b3a] bg-white dark:bg-[#1b3224] shadow-2xl">
+<img id="pokemonImage" alt="Pokémon" class="h-48 w-48 object-contain transition-transform duration-300 group-hover:scale-110" src="/placeholder.svg?height=192&width=192"/>
+</div>
+<div class="absolute bottom-4 right-4 flex size-10 items-center justify-center rounded-full bg-primary text-[#122118] shadow-lg">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+</div>
+<div class="text-center">
+<div class="mb-2 flex items-center justify-center gap-2">
+<h2 id="pokemonName" class="text-3xl font-black text-slate-900 dark:text-white capitalize"></h2>
+<span id="pokemonId" class="rounded-lg bg-gray-200 dark:bg-[#254632] px-2 py-1 text-xs font-bold text-gray-600 dark:text-[#95c6a9]"></span>
+</div>
+<!-- Chips (Types) -->
+<div id="pokemonTypes" class="flex flex-wrap justify-center gap-2 mt-4">
+</div>
+</div>
+</div>
+<!-- Right Column: Stats & Details -->
+<div class="flex flex-col p-8 lg:col-span-7">
+<div class="mb-6 flex items-center justify-between">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Estadísticas Base</h3>
+<button class="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                                        Compartir
+                                    </button>
+</div>
+<!-- Stats Grid (Description List styled) -->
+<div id="pokemonInfo" class="grid grid-cols-2 gap-6 sm:grid-cols-2 mb-8">
+</div>
+<!-- Progress Bars for combat stats -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">Estadísticas de Combate</h3>
+<div id="pokemonStats"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="mt-12 border-t border-gray-200 dark:border-[#254632] py-8 text-center">
+<p class="text-sm text-gray-500 dark:text-[#5a8069]">
+                Datos proporcionados por PokéAPI. Diseño con fines conceptuales.
+            </p>
+</footer>
+</div>
+
+<!-- JavaScript functionality for API integration -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const loading = document.getElementById('loading');
+    const error = document.getElementById('error');
+    const errorMessage = document.getElementById('errorMessage');
+    const pokemonCard = document.getElementById('pokemonCard');
+
+    // Type colors and icons mapping
+    const typeData = {
+        normal: { color: 'bg-gray-400/20 text-gray-700 dark:text-gray-300 border-gray-400/30', icon: 'circle' },
+        fire: { color: 'bg-red-400/20 text-red-700 dark:text-red-300 border-red-400/30', icon: 'local_fire_department' },
+        water: { color: 'bg-blue-400/20 text-blue-700 dark:text-blue-300 border-blue-400/30', icon: 'water_drop' },
+        electric: { color: 'bg-yellow-400/20 text-yellow-700 dark:text-yellow-300 border-yellow-400/30', icon: 'bolt' },
+        grass: { color: 'bg-green-400/20 text-green-700 dark:text-green-300 border-green-400/30', icon: 'eco' },
+        ice: { color: 'bg-cyan-400/20 text-cyan-700 dark:text-cyan-300 border-cyan-400/30', icon: 'ac_unit' },
+        fighting: { color: 'bg-orange-700/20 text-orange-700 dark:text-orange-300 border-orange-700/30', icon: 'sports_martial_arts' },
+        poison: { color: 'bg-purple-400/20 text-purple-700 dark:text-purple-300 border-purple-400/30', icon: 'science' },
+        ground: { color: 'bg-yellow-700/20 text-yellow-900 dark:text-yellow-200 border-yellow-700/30', icon: 'terrain' },
+        flying: { color: 'bg-indigo-400/20 text-indigo-700 dark:text-indigo-300 border-indigo-400/30', icon: 'air' },
+        psychic: { color: 'bg-pink-400/20 text-pink-700 dark:text-pink-300 border-pink-400/30', icon: 'psychology' },
+        bug: { color: 'bg-lime-400/20 text-lime-700 dark:text-lime-300 border-lime-400/30', icon: 'bug_report' },
+        rock: { color: 'bg-stone-600/20 text-stone-700 dark:text-stone-300 border-stone-600/30', icon: 'landscape' },
+        ghost: { color: 'bg-purple-700/20 text-purple-900 dark:text-purple-200 border-purple-700/30', icon: 'emoji_objects' },
+        dragon: { color: 'bg-indigo-700/20 text-indigo-900 dark:text-indigo-200 border-indigo-700/30', icon: 'dragon' },
+        dark: { color: 'bg-gray-800/20 text-gray-900 dark:text-gray-200 border-gray-800/30', icon: 'dark_mode' },
+        steel: { color: 'bg-slate-400/20 text-slate-700 dark:text-slate-300 border-slate-400/30', icon: 'shield' },
+        fairy: { color: 'bg-pink-300/20 text-pink-700 dark:text-pink-300 border-pink-300/30', icon: 'star' }
+    };
+
+    async function fetchPokemon(query) {
+        try {
+            // Hide previous results and show loading
+            pokemonCard.classList.add('hidden');
+            error.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${query.toLowerCase()}`);
+            
+            if (!response.ok) {
+                throw new Error('Pokémon no encontrado. Intenta con otro nombre o número.');
+            }
+
+            const data = await response.json();
+            displayPokemon(data);
+        } catch (err) {
+            showError(err.message);
+        } finally {
+            loading.classList.add('hidden');
+        }
+    }
+
+    function displayPokemon(pokemon) {
+        // Basic Info
+        document.getElementById('pokemonImage').src = pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default;
+        document.getElementById('pokemonImage').alt = pokemon.name;
+        document.getElementById('pokemonName').textContent = pokemon.name;
+        document.getElementById('pokemonId').textContent = `#${String(pokemon.id).padStart(3, '0')}`;
+
+        // Types
+        const typesContainer = document.getElementById('pokemonTypes');
+        typesContainer.innerHTML = pokemon.types.map(type => {
+            const typeInfo = typeData[type.type.name] || typeData.normal;
+            return `
+                <div class="flex items-center gap-1.5 rounded-full ${typeInfo.color} border px-4 py-1.5">
+                    <span class="material-symbols-outlined text-[18px]">${typeInfo.icon}</span>
+                    <span class="text-sm font-bold capitalize">${type.type.name}</span>
+                </div>
+            `;
+        }).join('');
+
+        // Info Grid (Height, Weight, Base XP, Abilities)
+        const infoContainer = document.getElementById('pokemonInfo');
+        const abilities = pokemon.abilities.map(a => a.ability.name.replace('-', ' ')).join(', ');
+        infoContainer.innerHTML = `
+            <div class="flex flex-col gap-1 rounded-xl bg-gray-50 dark:bg-[#15261c] p-4 border border-gray-100 dark:border-[#254632]">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-gray-400 dark:text-[#5a8069] text-[20px]">height</span>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#95c6a9]">Altura</p>
+                </div>
+                <p class="text-xl font-medium text-slate-900 dark:text-white">${pokemon.height / 10} m</p>
+            </div>
+            <div class="flex flex-col gap-1 rounded-xl bg-gray-50 dark:bg-[#15261c] p-4 border border-gray-100 dark:border-[#254632]">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-gray-400 dark:text-[#5a8069] text-[20px]">weight</span>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#95c6a9]">Peso</p>
+                </div>
+                <p class="text-xl font-medium text-slate-900 dark:text-white">${pokemon.weight / 10} kg</p>
+            </div>
+            <div class="flex flex-col gap-1 rounded-xl bg-gray-50 dark:bg-[#15261c] p-4 border border-gray-100 dark:border-[#254632]">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-gray-400 dark:text-[#5a8069] text-[20px]">military_tech</span>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#95c6a9]">XP Base</p>
+                </div>
+                <p class="text-xl font-medium text-slate-900 dark:text-white">${pokemon.base_experience || 'N/A'}</p>
+            </div>
+            <div class="flex flex-col gap-1 rounded-xl bg-gray-50 dark:bg-[#15261c] p-4 border border-gray-100 dark:border-[#254632]">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="material-symbols-outlined text-gray-400 dark:text-[#5a8069] text-[20px]">stars</span>
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#95c6a9]">Habilidades</p>
+                </div>
+                <p class="text-sm font-medium text-slate-900 dark:text-white leading-tight capitalize">${abilities}</p>
+            </div>
+        `;
+
+        // Combat Stats
+        const statsContainer = document.getElementById('pokemonStats');
+        const statNames = {
+            'hp': 'HP',
+            'attack': 'Ataque',
+            'defense': 'Defensa',
+            'special-attack': 'At. Esp.',
+            'special-defense': 'Def. Esp.',
+            'speed': 'Velocidad'
+        };
+        
+        statsContainer.innerHTML = pokemon.stats.map(stat => {
+            const percentage = Math.min((stat.base_stat / 255) * 100, 100);
+            const statName = statNames[stat.stat.name] || stat.stat.name;
+            return `
+                <div class="flex items-center gap-4">
+                    <span class="w-20 text-sm font-bold text-gray-500 dark:text-[#95c6a9]">${statName}</span>
+                    <div class="flex-1 h-3 rounded-full bg-gray-200 dark:bg-[#15261c] overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all duration-500" style="width: ${percentage}%;"></div>
+                    </div>
+                    <span class="w-10 text-right text-sm font-bold text-slate-900 dark:text-white">${stat.base_stat}</span>
+                </div>
+            `;
+        }).join('');
+
+        // Show the card
+        pokemonCard.classList.remove('hidden');
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        error.classList.remove('hidden');
+    }
+
+    // Event Listeners
+    searchBtn.addEventListener('click', () => {
+        const query = searchInput.value.trim();
+        if (query) {
+            fetchPokemon(query);
+        }
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query) {
+                fetchPokemon(query);
+            }
+        }
+    });
+
+    // Load a default Pokemon on page load
+    fetchPokemon('ditto');
+</script>
+</body>
+</html>
